@@ -1,18 +1,32 @@
 import React, { useState } from "react";
 
-const App = () => {
-  const [item, setItem] = useState(1);
-  // const [item, setItem] = useState(1)[0]; state만 사용할 때
-  // const [item, setItem] = useState(1)[1]; set함수만 사용할 때
+const useInput = (initialValue, validator) => {
+  const [value, setValue] = useState(initialValue);
+  const onChange = e => {
+    const {
+      target: { value }
+    } = e;
+    let willUpdate = true;
 
-  const incrementItem = () => setItem(item + 1);
-  const decrementItem = () => setItem(item - 1);
+    if (typeof validator === "function") {
+      willUpdate = validator(value);
+    }
+    if (willUpdate) {
+      setValue(value);
+    }
+  };
+  return { value, onChange };
+};
+
+const App = () => {
+  const maxLength = value => value.length < 10;
+  const name = useInput("Mr.", maxLength);
   return (
-    <>
-      <div>{item}</div>
-      <button onClick={incrementItem}>증가</button>
-      <button onClick={decrementItem}>감소</button>
-    </>
+    <div>
+      <h1>hello</h1>
+      {/* <input placeholder="Name" value={name.value} onChange={name.onChange} /> */}
+      <input placeholder="Name" {...name} />
+    </div>
   );
 };
 
