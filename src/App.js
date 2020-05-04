@@ -1,31 +1,34 @@
 import React, { useState } from "react";
 
-const useInput = (initialValue, validator) => {
-  const [value, setValue] = useState(initialValue);
-  const onChange = e => {
-    const {
-      target: { value }
-    } = e;
-    let willUpdate = true;
+// API로부터 정보를 받았다고 가정
+const content = [
+  {
+    tab: "section 1",
+    content: "content of section 1"
+  },
+  {
+    tab: "section 2",
+    content: "content of section 2"
+  }
+];
 
-    if (typeof validator === "function") {
-      willUpdate = validator(value);
-    }
-    if (willUpdate) {
-      setValue(value);
-    }
+const useTabs = (initialTab, allTabs) => {
+  const [currentIndex, setCurrentIndex] = useState(initialTab);
+  return {
+    currentItem: allTabs[currentIndex],
+    changeItem: setCurrentIndex
   };
-  return { value, onChange };
 };
 
 const App = () => {
-  const maxLength = value => value.length < 10;
-  const name = useInput("Mr.", maxLength);
+  const { currentItem, changeItem } = useTabs(0, content);
+
   return (
     <div>
-      <h1>hello</h1>
-      {/* <input placeholder="Name" value={name.value} onChange={name.onChange} /> */}
-      <input placeholder="Name" {...name} />
+      {content.map((section, i) => (
+        <button onClick={() => changeItem(i)}>{section.tab}</button>
+      ))}
+      <div>{currentItem.content}</div>
     </div>
   );
 };
