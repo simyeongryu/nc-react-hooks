@@ -1,23 +1,28 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+
+const useClick = onClick => {
+  const element = useRef();
+  // useClick이 마운트 될때 실행 (state 업데이트는 X)
+  useEffect(() => {
+    if (element.current) {
+      element.current.addEventListener("click", onClick);
+    }
+    // componentWillUnmount. 컴포넌트가 종료될 때의 동작을 함수로 만들어 return (클로저)
+    return () => {
+      if (element.current) {
+        element.removeEventListener("click", onClick);
+      }
+    };
+  }, []);
+  return element;
+};
 
 const App = () => {
-  const sayHello = () => console.log("hello");
-  const [number, setNumber] = useState(0);
-  const [aNumber, setAnumber] = useState(0);
-
-  /**
-   * useEffect()
-   * componentDidMount, componentWillUnmount, componentDidUpdate 를 합쳐놓은 함수
-   */
-  useEffect(sayHello); // 마운트 될 때, state가 변하면 실행
-  // useEffect(sayHello, []); // 마운트 될 때만 실행
-  // useEffect(sayHello, [number]); // 마운트 될 때, state 중 number가 변할 때 해당 함수 새로 시작
-
+  const sayHello = () => console.log("say Hello");
+  const title = useClick(sayHello);
   return (
     <div>
-      <h1>Hello</h1>
-      <button onClick={() => setNumber(number + 1)}>{number}</button>
-      <button onClick={() => setAnumber(aNumber + 1)}>{aNumber}</button>
+      <h1 ref={title}>Hello</h1>
     </div>
   );
 };

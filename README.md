@@ -142,5 +142,94 @@ const App = () => {
 };
 
 export default App;
+```
 
+### 1) useTitle
+
+```js
+import React, { useState, useEffect } from "react";
+
+// react-helmet을 대체하는 훅
+const useTitle = initialTitle => {
+  const [title, setTitle] = useState(initialTitle);
+
+  const updateTitle = () => {
+    const htmlTitle = document.querySelector("title");
+    htmlTitle.innerText = title;
+  };
+  // component 실행 시, title 변경 시 실행
+  useEffect(updateTitle, [title]);
+  return setTitle;
+};
+
+const App = () => {
+  const titleUpdater = useTitle("Loading...");
+  // 5초 후 title 변경
+  setTimeout(() => titleUpdater("Home"), 5000);
+  return (
+    <div>
+      <h1>Hello</h1>
+    </div>
+  );
+};
+
+export default App;
+```
+
+### 2) useClick
+
+**reference**
+
+React의 모든 컴포넌트는 reference 요소를 갖고 있다. HTML 요소에 접근할 수 있게 한다.(quertSelector 등과 비슷하다.) current라는 프로퍼티에 참조하는 HTML DOM이 담겨 있다. 
+
+```js
+import React, { useState, useEffect, useRef } from "react";
+
+const App = () => {
+  const test = useRef();
+  setTimeout(() => test.current.focus(), 5000); // 참조하는 요소로 커서 이동
+  return (
+    <div>
+      <h1>Hello</h1>
+      <input ref={test} placeholder="la" />
+    </div>
+  );
+};
+
+export default App;
+```
+
+useEffect 안에 클로저(함수 리턴)를 만들면 componentWillUnmount를 구현할 수 있다.
+
+```js
+import React, { useState, useEffect, useRef } from "react";
+
+const useClick = onClick => {
+  const element = useRef();
+  // useClick이 마운트 될때 실행 (state 업데이트는 X)
+  useEffect(() => {
+    if (element.current) {
+      element.current.addEventListener("click", onClick);
+    }
+    // componentWillUnmount. 컴포넌트가 종료될 때의 동작을 함수로 만들어 return (클로저)
+    return () => {
+      if (element.current) {
+        element.removeEventListener("click", onClick);
+      }
+    };
+  }, []);
+  return element;
+};
+
+const App = () => {
+  const sayHello = () => console.log("say Hello");
+  const title = useClick(sayHello);
+  return (
+    <div>
+      <h1 ref={title}>Hello</h1>
+    </div>
+  );
+};
+
+export default App;
 ```
