@@ -233,3 +233,74 @@ const App = () => {
 
 export default App;
 ```
+
+### 3) useConfirm()
+
+confirm 팝업창을 이용한 UI 만들기 
+
+예) 정말 삭제하시겠습니까?
+
+```js
+import React, { useState, useEffect, useRef } from "react";
+
+const useConfirm = (message = "", onConfirm, onCancel) => {
+  const confirmAction = () => {
+    if (window.confirm(message)) {
+      onConfirm();
+    } else {
+      onCancel();
+    }
+  };
+
+  return confirmAction;
+};
+
+const App = () => {
+  const deleteWorld = () => console.log("Deleting the world");
+  const abort = () => console.log("Aborted");
+  const confirmDelete = useConfirm("정말 삭제하시겠습니까?", deleteWorld, abort);
+  return (
+    <div>
+      <button onClick={confirmDelete}>delete the world</button>
+    </div>
+  );
+};
+
+export default App;
+
+```
+
+### 4) usePreventLeave()
+
+뭔가 정보를 저장 혹은 로드하기 전에 사용자가 떠나려고 하면 경고 창을 보여준다.
+```js
+import React, { useState, useEffect, useRef } from "react";
+
+const usePreventLeave = () => {
+  const listner = e => {
+    // 밑의 내용을 반드시 넣어줘야 된다.
+    e.preventDefault();
+    e.returnValue = "";
+  };
+  // API 등에서 정보를 받는 중이라면 enable
+  // beforeunload 이벤트는 페이지를 떠날 경우 발생하는 이벤트다. 
+  // 즉, 인터넷 창을 닫거나 다른 페이지로 이동하거나 새로고침하는 경우다.
+  const enablePrevent = () => window.addEventListener("beforeunload", listner);
+  const disablePrevent = () =>
+    window.removeEventListener("beforeunload", listner);
+  return { enablePrevent, disablePrevent };
+};
+
+const App = () => {
+  const { enablePrevent, disablePrevent } = usePreventLeave();
+  return (
+    <div>
+      <button onClick={enablePrevent}>protect</button>
+      <button onClick={disablePrevent}>unprotect</button>
+    </div>
+  );
+};
+
+export default App;
+
+```
