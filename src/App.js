@@ -1,26 +1,19 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
 
-function App() {
+const App = () => {
+  const [item, setItem] = useState(1);
+  // const [item, setItem] = useState(1)[0]; state만 사용할 때
+  // const [item, setItem] = useState(1)[1]; set함수만 사용할 때
+
+  const incrementItem = () => setItem(item + 1);
+  const decrementItem = () => setItem(item - 1);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <div>{item}</div>
+      <button onClick={incrementItem}>증가</button>
+      <button onClick={decrementItem}>감소</button>
+    </>
   );
-}
+};
 
 export default App;
