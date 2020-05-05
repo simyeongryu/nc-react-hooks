@@ -1,24 +1,28 @@
 import React, { useEffect, useState, useRef } from "react";
 
-const useFullScreen = () => {
-  const element = useRef();
-  const triggerFull = () => {
-    if (element.current) {
-      element.current.requestFullscreen();
+const useNotification = (title, options) => {
+  const fireNoti = () => {
+    if (Notification.permission !== "granted") {
+      Notification.requestPermission().then(permission => {
+        if (permission === "granted") {
+          new Notification(title, options);
+        } else {
+          return;
+        }
+      });
+    } else {
+      new Notification(title, options);
     }
   };
-  return { element, triggerFull };
+
+  return fireNoti;
 };
 
 const App = () => {
-  const { element, triggerFull } = useFullScreen();
+  const triggerNoti = useNotification("밥 먹을까?", { body: "한식한식" });
   return (
     <div>
-      <img
-        ref={element}
-        src="https://www.pngitem.com/pimgs/m/505-5058955_sample-png-images-sample-png-transparent-png.png"
-      />
-      <button onClick={triggerFull}>FullScreen</button>
+      <button onClick={triggerNoti}>버튼</button>
     </div>
   );
 };
