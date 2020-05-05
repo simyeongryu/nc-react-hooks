@@ -1,28 +1,35 @@
-import React, { useEffect, useRef } from "react";
-// hook과 animation를 섞기
-const useFadeIn = (duration = 1, delay = 0) => {
-  const element = useRef();
+import React, { useEffect, useState } from "react";
+
+// network 상태 감지
+const useNetwork = onChange => {
+  // navigator.onLine - 인터넷에 연결되었으면 true 리턴
+  const [status, setStatus] = useState(navigator.onLine);
+
+  const handleChange = () => {
+    onChange(navigator.onLine);
+    setStatus(navigator.onLine);
+  };
 
   useEffect(() => {
-    if (element.current) {
-      // DOM의 프로퍼티를 다채롭게 조작할 수 있다.
-      const { current } = element;
-      current.style.transition = `opacity ${duration}s ease-in-out ${delay}s`;
-      current.style.opacity = 1;
-    }
-  });
+    window.addEventListener("online", handleChange);
+    window.addEventListener("offline", handleChange);
+    return () => {
+      window.removeEventListener("online", handleChange);
+      window.removeEventListener("offline", handleChange);
+    };
+  }, []);
 
-  return { ref: element, style: { opacity: 0 } };
+  return status;
 };
 
 const App = () => {
-  const fadeInH1 = useFadeIn(3, 2);
-  const fadeInP = useFadeIn(5, 10);
+  const handleNetworkChange = online => {
+    console.log(online ? "ONONON" : "OFFOFFOFF");
+  };
+  const online = useNetwork(handleNetworkChange);
   return (
     <div>
-      {/* <h1 ref={fadeInH1.ref} style={fadeInH1.style}> */}
-      <h1 {...fadeInH1}>Hello</h1>
-      <p {...fadeInP}>lalalal</p>
+      <h1>{online ? "online" : "offline"}</h1>
     </div>
   );
 };
