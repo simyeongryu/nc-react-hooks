@@ -322,7 +322,7 @@ const useBeforLeave = onBefore => {
   };
   useEffect(() => {
     document.addEventListener("mouseleave", handle);
-  });
+  }, []);
   return () => {
     document.removeEventListener("mouseleave", handle);
   };
@@ -342,3 +342,41 @@ export default App;
 ```
 
 `clientY` 는 마우스 이벤트의 프로퍼티로 이벤트가 발생했을 때 마우스 커서의 Y축 좌표를 의미한다.
+
+### 6) useFadeIn
+
+hook과 animation를 섞기
+
+```js
+import React, { useEffect, useRef } from "react";
+
+const useFadeIn = (duration = 1, delay = 0) => {
+  const element = useRef();
+
+  useEffect(() => {
+    if (element.current) {
+      // DOM의 프로퍼티를 다채롭게 조작할 수 있다.
+      const { current } = element;
+      current.style.transition = `opacity ${duration}s ease-in-out ${delay}s`;
+      current.style.opacity = 1;
+    }
+  });
+
+  return { ref: element, style: { opacity: 0 } };
+};
+
+const App = () => {
+  const fadeInH1 = useFadeIn(3, 2);
+  const fadeInP = useFadeIn(5, 10);
+  return (
+    <div>
+      {/* <h1 ref={fadeInH1.ref} style={fadeInH1.style}> */}
+      <h1 {...fadeInH1}>Hello</h1>
+      <p {...fadeInP}>lalalal</p>
+    </div>
+  );
+};
+
+export default App;
+
+```

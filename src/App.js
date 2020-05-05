@@ -1,27 +1,28 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
+// hook과 animation를 섞기
+const useFadeIn = (duration = 1, delay = 0) => {
+  const element = useRef();
 
-const useBeforLeave = onBefore => {
-  const handle = e => {
-    // event 객체를 이용해서 더 세밀한 조정이 가능하다
-    const { clientY } = e;
-    if (clientY <= 0) {
-      onBefore();
-    }
-  };
   useEffect(() => {
-    document.addEventListener("mouseleave", handle);
+    if (element.current) {
+      // DOM의 프로퍼티를 다채롭게 조작할 수 있다.
+      const { current } = element;
+      current.style.transition = `opacity ${duration}s ease-in-out ${delay}s`;
+      current.style.opacity = 1;
+    }
   });
-  return () => {
-    document.removeEventListener("mouseleave", handle);
-  };
+
+  return { ref: element, style: { opacity: 0 } };
 };
 
 const App = () => {
-  const begForLife = () => console.log("Plz don't leave");
-  useBeforLeave(begForLife);
+  const fadeInH1 = useFadeIn(3, 2);
+  const fadeInP = useFadeIn(5, 10);
   return (
     <div>
-      <h1>Hello</h1>
+      {/* <h1 ref={fadeInH1.ref} style={fadeInH1.style}> */}
+      <h1 {...fadeInH1}>Hello</h1>
+      <p {...fadeInP}>lalalal</p>
     </div>
   );
 };
