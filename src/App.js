@@ -1,26 +1,27 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 
-// 뭔가 정보를 저장 혹은 로드하기 전에 사용자가 떠나려고 하면 경고 창을 보여준다.
-
-const usePreventLeave = () => {
-  const listner = e => {
-    // 밑의 내용을 반드시 넣어줘야 된다.
-    e.preventDefault();
-    e.returnValue = "";
+const useBeforLeave = onBefore => {
+  const handle = e => {
+    // event 객체를 이용해서 더 세밀한 조정이 가능하다
+    const { clientY } = e;
+    if (clientY <= 0) {
+      onBefore();
+    }
   };
-  // API 등에서 정보를 받는 중이라면 enable
-  const enablePrevent = () => window.addEventListener("beforeunload", listner);
-  const disablePrevent = () =>
-    window.removeEventListener("beforeunload", listner);
-  return { enablePrevent, disablePrevent };
+  useEffect(() => {
+    document.addEventListener("mouseleave", handle);
+  });
+  return () => {
+    document.removeEventListener("mouseleave", handle);
+  };
 };
 
 const App = () => {
-  const { enablePrevent, disablePrevent } = usePreventLeave();
+  const begForLife = () => console.log("Plz don't leave");
+  useBeforLeave(begForLife);
   return (
     <div>
-      <button onClick={enablePrevent}>protect</button>
-      <button onClick={disablePrevent}>unprotect</button>
+      <h1>Hello</h1>
     </div>
   );
 };

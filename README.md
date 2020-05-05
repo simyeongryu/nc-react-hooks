@@ -304,3 +304,41 @@ const App = () => {
 export default App;
 
 ```
+
+### 5) useBeforeLeave()
+
+마우스가 특정 지역을 벗어날 때 유용함
+
+```js
+import React, { useEffect } from "react";
+
+const useBeforLeave = onBefore => {
+  const handle = e => {
+    // event 객체를 이용해서 더 세밀한 조정이 가능하다
+    const { clientY } = e;
+    if (clientY <= 0) {
+      onBefore();
+    }
+  };
+  useEffect(() => {
+    document.addEventListener("mouseleave", handle);
+  });
+  return () => {
+    document.removeEventListener("mouseleave", handle);
+  };
+};
+
+const App = () => {
+  const begForLife = () => console.log("Plz don't leave");
+  useBeforLeave(begForLife);
+  return (
+    <div>
+      <h1>Hello</h1>
+    </div>
+  );
+};
+
+export default App;
+```
+
+`clientY` 는 마우스 이벤트의 프로퍼티로 이벤트가 발생했을 때 마우스 커서의 Y축 좌표를 의미한다.
