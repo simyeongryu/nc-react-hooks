@@ -1,35 +1,33 @@
 import React, { useEffect, useState } from "react";
 
-// network 상태 감지
-const useNetwork = onChange => {
-  // navigator.onLine - 인터넷에 연결되었으면 true 리턴
-  const [status, setStatus] = useState(navigator.onLine);
+const useScroll = () => {
+  const [state, setState] = useState({
+    x: 0,
+    y: 0
+  });
 
-  const handleChange = () => {
-    onChange(navigator.onLine);
-    setStatus(navigator.onLine);
+  const onScroll = e => {
+    setState({ y: window.scrollY, x: window.scrollX });
   };
 
   useEffect(() => {
-    window.addEventListener("online", handleChange);
-    window.addEventListener("offline", handleChange);
+    window.addEventListener("scroll", onScroll);
+
     return () => {
-      window.removeEventListener("online", handleChange);
-      window.removeEventListener("offline", handleChange);
+      window.removeEventListener("scroll", onScroll);
     };
   }, []);
 
-  return status;
+  return state;
 };
 
 const App = () => {
-  const handleNetworkChange = online => {
-    console.log(online ? "ONONON" : "OFFOFFOFF");
-  };
-  const online = useNetwork(handleNetworkChange);
+  const { y } = useScroll();
   return (
-    <div>
-      <h1>{online ? "online" : "offline"}</h1>
+    <div style={{ height: 10000 }}>
+      <h1 style={{ position: "fixed", color: y > 5000 ? "red" : "blue" }}>
+        hello
+      </h1>
     </div>
   );
 };
