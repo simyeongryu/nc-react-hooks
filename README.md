@@ -781,3 +781,7 @@ function Screen() {
 export default Screen;
 
 ```
+
+Provider는 데이터를 저장하는 Provider, 데이터를 변경하는 Provider 등 나눠서 만드는 게 좋다.
+
+또 데이터 종료에 따라서도 구분해서 만드는 게 좋다.

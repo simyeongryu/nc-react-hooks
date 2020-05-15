@@ -1,18 +1,15 @@
 import React from "react";
-import Header from "./Header";
-import { useFns } from "./context";
+import { useSetLang, useHyperTranslate } from "./context";
 
-function Screen() {
-  const { logUserIn, logUserOut } = useFns();
-
+export default () => {
+  const setLang = useSetLang();
+  const hyperTranslate = useHyperTranslate();
   return (
-    <div>
-      <Header />
-      <h1>First screen</h1>
-      <button onClick={logUserIn}> Log user In</button>
-      <button onClick={logUserOut}> Log user Out</button>
-    </div>
+    <>
+      <h1>{hyperTranslate("Hello")}!</h1>
+      <button onClick={() => setLang("kor")}>
+        {hyperTranslate("Translate")}
+      </button>
+    </>
   );
-}
-
-export default Screen;
+};

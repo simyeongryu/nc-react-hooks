@@ -1,34 +1,32 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, createContext } from "react";
 
-// App의 데이터 저장소
-const UserContext = React.createContext();
+const LangContext = createContext();
 
-// Provider 내 모든 children은 value에 대한 접근 권한이 생겼다.
-// 한 곳에 state를 몰아서 정리
-const UserContextProvider = ({ children }) => {
-  const [user, setUser] = useState({
-    name: "Simyeong",
-    loggedIn: false
-  });
+const Lang = ({ defaultLang, children, translations }) => {
+  const [lang, setLang] = useState(defaultLang);
 
-  const logUserIn = () => setUser({ ...user, loggedIn: true });
-  const logUserOut = () => setUser({ ...user, loggedIn: false });
+  const hyperTranslate = text => {
+    if (lang === defaultLang) {
+      return text;
+    } else {
+      return translations[lang][text];
+    }
+  };
 
   return (
-    <UserContext.Provider value={{ user, fn: { logUserIn, logUserOut } }}>
+    <LangContext.Provider value={{ setLang, hyperTranslate }}>
       {children}
-    </UserContext.Provider>
+    </LangContext.Provider>
   );
 };
-
-export const useUser = () => {
-  const { user } = useContext(UserContext);
-  return user;
+export const useSetLang = lang => {
+  const { setLang } = useContext(LangContext);
+  return setLang;
 };
 
-export const useFns = () => {
-  const { fn } = useContext(UserContext);
-  return fn;
+export const useHyperTranslate = () => {
+  const { hyperTranslate } = useContext(LangContext);
+  return hyperTranslate;
 };
 
-export default UserContextProvider;
+export default Lang;
