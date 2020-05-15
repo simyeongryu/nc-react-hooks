@@ -697,3 +697,87 @@ function Screen() {
 export default Screen;
 
 ```
+
+context를 좀더 모듈화 하기
+
+#### context.js
+```js
+import React, { useState, useContext } from "react";
+
+// App의 데이터 저장소
+const UserContext = React.createContext();
+
+// Provider 내 모든 children은 value에 대한 접근 권한이 생겼다.
+// 한 곳에 state를 몰아서 정리
+const UserContextProvider = ({ children }) => {
+  const [user, setUser] = useState({
+    name: "Simyeong",
+    loggedIn: false
+  });
+
+  const logUserIn = () => setUser({ ...user, loggedIn: true });
+  const logUserOut = () => setUser({ ...user, loggedIn: false });
+
+  return (
+    <UserContext.Provider value={{ user, fn: { logUserIn, logUserOut } }}>
+      {children}
+    </UserContext.Provider>
+  );
+};
+
+export const useUser = () => {
+  const { user } = useContext(UserContext);
+  return user;
+};
+
+export const useFns = () => {
+  const { fn } = useContext(UserContext);
+  return fn;
+};
+
+export default UserContextProvider;
+
+```
+
+#### Header.js
+
+```js
+import React from "react";
+import { useUser } from "./context";
+
+function Header() {
+  const { name, loggedIn } = useUser();
+  return (
+    <header>
+      <a href="#">Home</a> Hello {name}, {loggedIn ? "Logged in" : "anonymous"}!
+    </header>
+  );
+}
+
+export default Header;
+
+```
+
+#### Screen.js
+
+```js
+import React from "react";
+import Header from "./Header";
+import { useFns } from "./context";
+
+function Screen() {
+  const { logUserIn, logUserOut } = useFns();
+
+  return (
+    <div>
+      <Header />
+      <h1>First screen</h1>
+      <button onClick={logUserIn}> Log user In</button>
+      <button onClick={logUserOut}> Log user Out</button>
+    </div>
+  );
+}
+
+export default Screen;
+
+```
