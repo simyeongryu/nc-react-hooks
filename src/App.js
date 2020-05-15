@@ -1,30 +1,15 @@
-import React, { useEffect, useState, useRef } from "react";
+import React from "react";
+import Screen from "./Screen";
+import UserContextProvider from "./context";
 
-const useNotification = (title, options) => {
-  const fireNoti = () => {
-    if (Notification.permission !== "granted") {
-      Notification.requestPermission().then(permission => {
-        if (permission === "granted") {
-          new Notification(title, options);
-        } else {
-          return;
-        }
-      });
-    } else {
-      new Notification(title, options);
-    }
-  };
-
-  return fireNoti;
-};
-
-const App = () => {
-  const triggerNoti = useNotification("밥 먹을까?", { body: "한식한식" });
+function App() {
   return (
-    <div>
-      <button onClick={triggerNoti}>버튼</button>
-    </div>
+    // App내부에 있는 모든 것들을 ContextProvider 내부에 둔다
+    // Screen 이 ContextProvider의 children이 된다.
+    <UserContextProvider>
+      <Screen />
+    </UserContextProvider>
   );
-};
+}
 
 export default App;

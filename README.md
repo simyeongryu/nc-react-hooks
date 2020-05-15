@@ -540,5 +540,160 @@ const App = () => {
 };
 
 export default App;
+```
+
+## useContext()
+
+prop과 state를 한 곳에 저장해서 관리한다.
+
+일반적인 props 전달
+
+#### App.js
+
+```js
+import React, { useState } from "react";
+import Screen from "./Screen";
+
+function App() {
+  const [user] = useState({
+    name: "simyeong"
+  });
+  return (
+    <>
+      <Screen user={user} />
+    </>
+  );
+}
+
+export default App;
+```
+
+#### Screen.js
+
+```js
+import React from "react";
+import Header from "./Header";
+
+function Screen({ user }) {
+  return (
+    <div>
+      <Header user={user} />
+      <h1>First screen</h1>
+    </div>
+  );
+}
+
+export default Screen;
+
+```
+
+#### Header.js
+
+```js
+import React from "react";
+
+function Header({ user }) {
+  return (
+    <header>
+      <a href="#">Home</a> Hello, {user.name}!
+    </header>
+  );
+}
+
+export default Header;
+
+```
+
+context를 사용하려면 먼저 context.js 파일을 만든다.
+
+#### context.js
+
+```js
+import React, { useState } from "react";
+
+// App의 데이터 저장소
+export const UserContext = React.createContext();
+
+// Provider 내 모든 children은 value에 대한 접근 권한이 생겼다.
+const UserContextProvider = ({ children }) => {
+  const [user, setUser] = useState({
+    name: "Simyeong",
+    loggedIn: false
+  });
+
+  const logUserIn = () => setUser({ ...user, loggedIn: true });
+
+  return (
+    <UserContext.Provider value={{ user, logUserIn }}>
+      {children}
+    </UserContext.Provider>
+  );
+};
+
+export default UserContextProvider;
+```
+
+#### App.js
+
+```js
+import React from "react";
+import Screen from "./Screen";
+import UserContextProvider from "./context";
+
+function App() {
+  return (
+    // App내부에 있는 모든 것들을 ContextProvider 내부에 둔다
+    // Screen 이 ContextProvider의 children이 된다.
+    <UserContextProvider>
+      <Screen />
+    </UserContextProvider>
+  );
+}
+
+export default App;
+
+```
+
+### Header.js
+
+```js
+import React, { useContext } from "react";
+import { UserContext } from "./context";
+
+function Header() {
+  const context = useContext(UserContext);
+  const {
+    user: { name, loggedIn }
+  } = context;
+  return (
+    <header>
+      <a href="#">Home</a> Hello {name}, {loggedIn ? "Logged in" : "anonymous"}!
+    </header>
+  );
+}
+
+export default Header;
+
+```
+
+#### Screen.js
+
+```js
+import React, { useContext } from "react";
+import Header from "./Header";
+import { UserContext } from "./context";
+
+function Screen() {
+  const { logUserIn } = useContext(UserContext);
+  return (
+    <div>
+      <Header />
+      <h1>First screen</h1>
+      <button onClick={logUserIn}> Log user In</button>
+    </div>
+  );
+}
+
+export default Screen;
 
 ```
