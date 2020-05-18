@@ -8,6 +8,7 @@ export const initialState = {
 export const ADD = "add";
 export const DELETE = "delete";
 export const COMPLETE = "complete";
+export const UNCOMPLETE = "uncomplete";
 
 // action의 이름은 아무거나 해도 된다.
 function reducer(state, action) {
@@ -34,6 +35,13 @@ function reducer(state, action) {
         ...state,
         toDos: state.toDos.filter(toDo => toDo.id !== action.payload),
         completed: [...state.completed, { ...target }]
+      };
+    case UNCOMPLETE:
+      const aTarget = state.completed.find(toDo => toDo.id === action.payload);
+      return {
+        ...state,
+        completed: state.completed.filter(toDo => toDo.id !== action.payload),
+        toDos: [...state.toDos, { ...aTarget }]
       };
     default:
       throw new Error();

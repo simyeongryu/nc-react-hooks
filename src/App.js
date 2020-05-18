@@ -1,5 +1,11 @@
 import React, { useReducer, useState } from "react";
-import reducer, { initialState, ADD, DELETE, COMPLETE } from "./reducer";
+import reducer, {
+  initialState,
+  ADD,
+  DELETE,
+  COMPLETE,
+  UNCOMPLETE
+} from "./reducer";
 
 function App() {
   // useReducer는 Component에 state가 많을 때 사용한다.
@@ -62,7 +68,9 @@ function App() {
                   ❌
                 </button>
                 <button
-                  onClick={() => dispatch({ type: DELETE, payload: toDo.id })}
+                  onClick={() =>
+                    dispatch({ type: UNCOMPLETE, payload: toDo.id })
+                  }
                 >
                   ⏪
                 </button>
