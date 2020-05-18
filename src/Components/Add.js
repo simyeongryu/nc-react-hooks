@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
-import { ADD } from "./actions";
-import { useDispatch } from "./context";
+import { ADD } from "../actions";
+import { useDispatch } from "../context";
 
 export default () => {
   const [newToDo, setNewToDo] = useState("");
@@ -21,7 +21,7 @@ export default () => {
 
   return (
     <>
-      <h1>Add To Do</h1>;
+      <h1>Add To Do</h1>
       <form onSubmit={onSubmit}>
         <input
           value={newToDo}
