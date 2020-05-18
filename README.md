@@ -796,6 +796,8 @@ dispatch는 reducer에 action을 보낸다.
 
 dispatch 가 reducer를 실행한다.
 
+reducer는 기본적으로 관리해야 할 state가 많을 때 사용한다.
+
 #### App.js
 
 ```js
@@ -828,6 +830,169 @@ function App() {
       <h1>{state.count}</h1>
       <button onClick={() => dispatch(INCREMENT)}>Plus</button>
       <button onClick={() => dispatch(DECREMENT)}>Minus</button>
+    </>
+  );
+}
+
+export default App;
+
+```
+
+### add to do
+
+state를 수정하는 게 아니라 대체하는 것이다.
+
+```js
+import React, { useReducer, useState } from "react";
+
+const initialState = {
+  toDos: []
+};
+const ADD = "add";
+
+// action의 이름은 아무거나 해도 된다.
+function reducer(state, action) {
+  // return 하는 object는 state를 대체할 object
+  // state가 변경되는 게 아니라 대체된다.
+  switch (action.type) {
+    case ADD:
+      // state를 변화시키는 게 아니라 대체. 버그를 줄인다.
+      // anti mutation
+      return { toDos: [...state.toDos, { text: action.payload }] };
+    default:
+      throw new Error();
+  }
+}
+
+function App() {
+  // useReducer는 Component에 state가 많을 때 사용한다.
+  // dispatch는 reducer에 action을 보낸다.
+  // useReducer(reducerFunction, state)
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const [newToDo, setNewToDo] = useState("");
+
+  const onSubmit = e => {
+    e.preventDefault();
+    dispatch({ type: ADD, payload: newToDo });
+  };
+  const onChange = e => {
+    const {
+      target: { value }
+    } = e;
+    setNewToDo(value);
+  };
+
+  return (
+    <>
+      <h1>Add To Do</h1>
+      <form onSubmit={onSubmit}>
+        <input
+          value={newToDo}
+          type="text"
+          placeholder="Write To Do"
+          onChange={onChange}
+        />
+      </form>
+      <ul>
+        <h2>To Dos</h2>
+        {state.toDos.map((toDo, index) => (
+          <li key={index}>{toDo.text}</li>
+        ))}
+      </ul>
+    </>
+  );
+}
+
+export default App;
+
+```
+
+### delete to do
+
+#### uuid
+
+긴 난수를 만들어주는 모듈
+
+```
+$ yarn add uuid
+```
+
+```js
+import React, { useReducer, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
+
+const initialState = {
+  toDos: []
+};
+const ADD = "add";
+const DELETE = "delete";
+
+// action의 이름은 아무거나 해도 된다.
+function reducer(state, action) {
+  // return 하는 object는 state를 대체할 object
+  // state가 변경되는 게 아니라 대체된다.
+  switch (action.type) {
+    case ADD:
+      // state를 변화시키는 게 아니라 대체. 버그를 줄인다.
+      // anti mutation
+      return {
+        toDos: [...state.toDos, { text: action.payload, id: uuidv4() }]
+      };
+    case DELETE:
+      return {
+        toDos: state.toDos.filter(toDo => {
+          console.log(toDo.id, action.payload);
+          return toDo.id !== action.payload;
+        })
+      };
+    default:
+      throw new Error();
+  }
+}
+
+function App() {
+  // useReducer는 Component에 state가 많을 때 사용한다.
+  // dispatch는 reducer에 action을 보낸다.
+  // useReducer(reducerFunction, state)
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const [newToDo, setNewToDo] = useState("");
+
+  const onSubmit = e => {
+    e.preventDefault();
+    dispatch({ type: ADD, payload: newToDo });
+    setNewToDo("");
+  };
+  const onChange = e => {
+    const {
+      target: { value }
+    } = e;
+    setNewToDo(value);
+  };
+
+  return (
+    <>
+      <h1>Add To Do</h1>
+      <form onSubmit={onSubmit}>
+        <input
+          value={newToDo}
+          type="text"
+          placeholder="Write To Do"
+          onChange={onChange}
+        />
+      </form>
+      <ul>
+        <h2>To Dos</h2>
+        {state.toDos.map(toDo => (
+          <li key={toDo.id}>
+            <span>{toDo.text}</span>
+            <button
+              onClick={() => dispatch({ type: DELETE, payload: toDo.id })}
+            >
+              ❌
+            </button>
+          </li>
+        ))}
+      </ul>
     </>
   );
 }
