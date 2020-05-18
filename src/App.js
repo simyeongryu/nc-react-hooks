@@ -1,42 +1,10 @@
-import React, { useReducer, useState } from "react";
-import reducer, {
-  initialState,
-  ADD,
-  DELETE,
-  COMPLETE,
-  UNCOMPLETE
-} from "./reducer";
+import React from "react";
+import Add from "./Add";
 
 function App() {
-  // useReducer는 Component에 state가 많을 때 사용한다.
-  // dispatch는 reducer에 action을 보낸다.
-  // useReducer(reducerFunction, state)
-  const [state, dispatch] = useReducer(reducer, initialState);
-  const [newToDo, setNewToDo] = useState("");
-
-  const onSubmit = e => {
-    e.preventDefault();
-    dispatch({ type: ADD, payload: newToDo });
-    setNewToDo("");
-  };
-  const onChange = e => {
-    const {
-      target: { value }
-    } = e;
-    setNewToDo(value);
-  };
-
   return (
     <>
-      <h1>Add To Do</h1>
-      <form onSubmit={onSubmit}>
-        <input
-          value={newToDo}
-          type="text"
-          placeholder="Write To Do"
-          onChange={onChange}
-        />
-      </form>
+      <Add />
       <ul>
         <h2>To Dos</h2>
         {state.toDos.map(toDo => (

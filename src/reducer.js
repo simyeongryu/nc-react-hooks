@@ -1,14 +1,10 @@
 import { v4 as uuidv4 } from "uuid";
+import { ADD, DELETE, COMPLETE, UNCOMPLETE } from "./actions";
 
 export const initialState = {
   toDos: [],
   completed: []
 };
-
-export const ADD = "add";
-export const DELETE = "delete";
-export const COMPLETE = "complete";
-export const UNCOMPLETE = "uncomplete";
 
 // action의 이름은 아무거나 해도 된다.
 function reducer(state, action) {
